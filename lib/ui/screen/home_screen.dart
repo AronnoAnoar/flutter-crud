@@ -32,29 +32,28 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.grey, Colors.indigo],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
+          // Removed the gradient for a flatter, modern look.
+          color: Theme.of(context).primaryColor,
         ),
-        title: const Text(
+        title: Text(
           "CRUD APPLICATION",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold, color: Colors.white),
         ),
         actions: [
           IconButton(
             onPressed: () {
               getProductMethod();
             },
-            icon: const Icon(Icons.refresh, color: Colors.white),
+            icon: const Icon(Icons.refresh),
+            color: Colors.white,
             tooltip: 'Reload',
           ),
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.notifications, color: Colors.white),
+            icon: const Icon(Icons.notifications),
+            color: Colors.white,
+            tooltip: 'Notifications',
           ),
         ],
       ),
@@ -62,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (controller) {
           if (controller.inProgress) {
             return const Center(
-              child: CircularProgressIndicator(color: Colors.green),
+              child: CircularProgressIndicator(),
             );
           }
 
@@ -76,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: const [
                   SizedBox(
                     height: 300,
-                    child: Center(child: Text("No products found.")),
+                    child: Center(child: Text("No products found.")), // Keep descriptive message
                   ),
                 ],
               ),
@@ -84,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           return RefreshIndicator(
-            color: Colors.green,
+            color: Theme.of(context).primaryColor,
             onRefresh: () async {
               await getProductMethod();
             },
@@ -93,10 +92,10 @@ class _HomeScreenState extends State<HomeScreen> {
               itemCount: controller.productList.length,
               itemBuilder: (context, index) {
                 final product = controller.productList[index];
+                // Added more modern styling to the Card
                 return Card(
                   margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
+                    horizontal: 16, // Increased horizontal margin
                   ),
                   elevation: 6,
                   shadowColor: Colors.black26,
@@ -109,14 +108,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Image
-                        Expanded(
-                          flex: 0,
-                          child: Center(
-                            child: ClipRRect(
+                        // Wrapped the image in a SizedBox for consistent sizing
+                        SizedBox(
+                          width: 100,
+                          height: 150, // Adjusted height
+                          child: ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child:
-                                  product.img != null && product.img!.isNotEmpty
-                                      ? Image.network(
+                                  product.img != null && product.img!.isNotEmpty ? Image.network(
                                         product.img!,
                                         width: 100,
                                         height: 170,
@@ -128,8 +127,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           stackTrace,
                                         ) {
                                           return Container(
-                                            width: 100,
-                                            height: 170,
+                                            width: 100, // Maintain size on error
+                                            height: 150, // Maintain size on error
                                             color: Colors.grey.shade300,
                                             child: const Icon(
                                               Icons.broken_image,
@@ -139,8 +138,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         },
                                       )
                                       : Container(
-                                        width: 100,
-                                        height: 170,
+                                        width: 100, // Maintain size when no image
+                                        height: 150, // Maintain size when no image
                                         color: Colors.blue.shade50,
                                         child: const Icon(
                                           Icons.image_not_supported,
@@ -148,14 +147,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ),
                             ),
-                          ),
                         ),
-
                         const SizedBox(width: 12),
-
                         //  Product Info
                         Expanded(
-                          child: Column(
+                          child: Column( // Organized product info in a column
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
@@ -165,19 +161,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.deepPurple,
                                 ),
+                                maxLines: 2, // Allow name to wrap
+                                overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 6),
                               Text("Code : ${product.productCode ?? 'N/A'}"),
                               Text("Qty : ${product.qty ?? '0'}"),
                               Text(
                                 "Price : ৳${product.unitPrice ?? '0'}",
-                                style: const TextStyle(color: Colors.green),
+                                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold), // Highlight price
                               ),
                               Text(
                                 "Total : ৳${product.totalPrice ?? '0'}",
-                                style: const TextStyle(color: Colors.green),
+                                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold), // Highlight total price
                               ),
-                              const SizedBox(height: 4),
+                              // Added a small space before the date
+                              const SizedBox(height: 8),
+                              // Added a SizedBox for consistent spacing at the bottom
+                              const SizedBox(height: 8),
+
                               Text(
                                 product.createdDate ?? '',
                                 style: const TextStyle(
@@ -186,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-
+                              // Buttons Row
                               /// buttons view ,update , delete
                               Row(
                                 children: [
@@ -194,11 +196,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
-                                            Colors.deepPurple.shade50,
+                                            Colors.deepPurple.shade50, // Keep distinct colors
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
+                                          borderRadius: BorderRadius.circular(8),
                                         ),
                                       ),
                                       onPressed: () {},
@@ -216,13 +216,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Expanded(
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.indigo.shade50,
+                                        backgroundColor: Colors.indigo.shade50, // Keep distinct colors
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
+                                          borderRadius: BorderRadius.circular(8),
                                         ),
-                                      ),
+                                        ), // Keep distinct colors
                                       onPressed: () {
                                         Map<String, dynamic> productPass = {
                                           'id': product.sId,
@@ -253,18 +251,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                   const SizedBox(width: 6),
                                   Expanded(
                                     child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red.shade50,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red.shade50,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(8),
                                           ),
                                         ),
-                                      ),
                                       onPressed: () {
                                         _deleteProduct('${product.sId}');
                                       },
-                                      child: const Text(
+                                      child: const Text( // Added maxLines for smaller screens
                                         "Delete",
                                         maxLines: 1,
                                         style: TextStyle(
@@ -294,8 +290,8 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () {
           Get.toNamed(ProductAddScreen.name);
         },
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.grey,
+        backgroundColor: Theme.of(context).primaryColor, // Use primary color for FAB
+        foregroundColor: Colors.white, // White icon on primary color
         child: Icon(Icons.add, color: Colors.white),
       ),
     );
